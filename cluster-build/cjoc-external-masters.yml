@@ -1,0 +1,22 @@
+# This Service will open the CJOC remoting jnlp port in all nodes in the cluster
+#
+# Get the CJOC port that is exposed with
+#
+#     kubectl get svc/cjoc-jnlp -o jsonpath='{.spec.ports[0].nodePort}'
+#
+# Security groups in nodes need to be opened or an ELB setup to connect from the external
+# master into this port.
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cjoc-jnlp
+spec:
+  type: NodePort
+  selector:
+    com.cloudbees.cje.tenant: cjoc
+  ports:
+  - name: jnlp
+    port: 50000
+    protocol: TCP
