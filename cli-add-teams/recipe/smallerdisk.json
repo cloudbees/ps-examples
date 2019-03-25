@@ -1,0 +1,23 @@
+{
+  "version": "1",
+  "data": [
+    {
+      "name": "basic",
+      "displayName": "Basic - overriden",
+      "description": "The minimalistic setup.",
+      "plugins": [
+        "pipeline-model-definition",
+        "wikitext",
+        "workflow-aggregator",
+        "workflow-cps-checkpoint"
+      ],
+      "provisioning": {
+        "diskSpaceGB": 20,
+        "memoryMB": 2048,
+        "cpu": 0.5,
+        "jvmHeapMemoryRatio": 0.7
+      },
+      "default": true
+    }
+  ]
+}
