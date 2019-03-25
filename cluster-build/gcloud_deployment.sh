@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-gcloud container clusters create add-teams-test --machine-type=custom-8-53248 --enable-autoscaling --max-nodes '333' --min-nodes '10' --labels=owner=corbolj --region us-east4
+gcloud container clusters create test-jenkins-cje --machine-type=custom-8-53248 --enable-autoscaling --max-nodes '333' --min-nodes '10' --labels=owner=corbolj --region us-east4
 
 kubectl create -f ssd-storage.yaml
 
