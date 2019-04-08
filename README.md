@@ -1,4 +1,4 @@
-# Repository for varies PS work
+# Repository for various PS work
  This repository should store any work conducted by Cloudbees Professional Services team.
  
  ## Process
