@@ -1,0 +1,30 @@
+# Create_Teams.sh
+
+This is an example of using a bash script that runs jenkins-cli.jar to create teams as defined in the JSON files in the team folder.
+
+## Dependancies
+
+This bash script requires that the following applications to be installed available in path.
+* java
+* jenkins-cli.jar
+
+Not having the above installed will prevent successful execution.
+
+## Parameters
+
+This script requires three parameters
+
+* 1st is the URL of the Jenkins Modern Cluster.
+* 2nd is the USERNAME of an existing user setup on the Jenkins OC.
+* 3rd is the PASSWORD of the USERNAME.
+
+## Recommended Usage
+
+```
+bash Create_Teams.sh $DOMAIN_NAME $JENKINS_USERNAME $JENKINS_TOKEN
+```
+
+It is recommended that all parameters are stored in variables as this keeps secrets like passwords from being stored in your history. It is also
+recommended that the output is also stored in a variable to make it easier use later within in the session.
+
+IMPORTANT: Make sure the name of the JSON file in the teams folder matches the "name" field in the JSON file itself.
