@@ -8,8 +8,8 @@
 2. Configure CJOC
   1. Add license
   2. Create admin user account
-    * Example username: corbolj
-    * Example password: welcome
+    * Example username: johnd
+    * Example password: "welcome"
   3. Create token for username.
 
 3. Prep Test Environment
