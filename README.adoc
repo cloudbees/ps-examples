@@ -20,4 +20,4 @@ If you discover a bug, typo, or have an idea on how to improve and example, feel
 enhancement.  If you have a question or an idea that can't be submitted as code, open up an issue for discussion.
 
 *Note:* All code stored in this repository should be considered public, do not submit any code with with secrets, proprietary IP,
-or personal information
+or personal information.
