@@ -1,0 +1,40 @@
+# Manage_Team_Recipes.sh
+
+This is an example of using a bash script that runs jenkins-cli.jar to backup the teams recipes in the recipes folder and if a recipe file is supplied as the forth parameter
+it will upload the new recipe file overwriting the existing configuration.
+
+## Dependancies
+
+This bash script requires that following applications to be installed available in path.
+* java
+* jenkins-cli.jar
+* jq
+
+Not having the above installed will prevent successful execution.
+
+## Parameters
+
+This script requires three parameters
+
+* 1st is the URL of the Jenkins Modern Cluster.
+* 2nd is the USERNAME of an existing user setup on the Jenkins OC.
+* 3rd is the PASSWORD of the USERNAME.
+* 4th (optional) is the location to the JSON recipe file you want to upload.
+
+## Recommended Usage
+
+```
+bash Manage_Team_Recipes.sh $DOMAIN_NAME $JENKINS_USERNAME $JENKINS_TOKEN
+```
+
+or
+
+```
+bash Manage_Team_Recipes.sh $DOMAIN_NAME $JENKINS_USERNAME $JENKINS_TOKEN recipes/recipes_smaller_disk.json
+```
+
+It is recommended that all parameters are stored in variables as this keeps secrets like passwords from being stored in your history. It is also
+recommended that the output is also stored in a variable to make it easier use later within in the session.
+
+IMPORTANT: Every time you run this script you will overwrite the file recipes/recipes_backup.json, and if you upload an new recipe file, it much contain the configuration of all
+recipes in your deployment.

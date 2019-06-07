@@ -1,0 +1,20 @@
+{
+    "data": {
+        "displayName": "team 02",
+        "icon": {
+            "color": "#dd6669",
+            "name": "truck"
+        },
+        "members": [
+            {
+                "id": "lcorbo",
+                "roles": [
+                    "TEAM_ADMIN"
+                ]
+            }
+        ],
+        "name": "team02",
+        "provisioningRecipe": "basic"
+    },
+    "version": "1"
+}
