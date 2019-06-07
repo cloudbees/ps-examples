@@ -12,6 +12,7 @@ To contribute examples, place your example inside of the folder that corresponds
 your example.  If a folder does not fit for your example, create your own.
 
 Examples should have the minimum:
+
 * Complete, functional code.
 * A document file briefly explaining how to use the example and what dependancies are needed.
 
