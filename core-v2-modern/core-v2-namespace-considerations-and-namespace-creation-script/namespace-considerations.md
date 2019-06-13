@@ -11,8 +11,8 @@
 ## Environments
 
 * [CloudBees Core](https://release-notes.cloudbees.com/product/140)
-* [CloudBees Core on modern cloud platforms - Managed Master](https://release-notes.cloudbees.com/product/141)
-* [CloudBees Core on modern cloud platforms - Operations Center](https://release-notes.cloudbees.com/product/142)
+* [CloudBees Core for Modern Cloud Platforms - Managed Master](https://release-notes.cloudbees.com/product/141)
+* [CloudBees Core for Modern Cloud Platforms - Operations Center](https://release-notes.cloudbees.com/product/142)
 
 ## Different Types of Architectures to Consider with CloudBees Core v2
 
