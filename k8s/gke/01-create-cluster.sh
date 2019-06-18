@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
 
-
-
-gcloud auth login
-CLUSTER_NAME=$(gcloud config get-value account)
-CLUSTER_NAME=ps-dev-${CLUSTER_NAME%@*}
-echo $CLUSTER_NAME
-
-
+source ./set-env.sh
 
 NAME=$CLUSTER_NAME && REGION=us-east1 && MACHINE_TYPE=n1-standard-2
 
@@ -20,3 +13,6 @@ gcloud container clusters create $NAME --region $REGION \
 kubectl create clusterrolebinding cluster-admin-binding \
     --clusterrole cluster-admin \
     --user $(gcloud config get-value account)
+
+
+kubectl create namespace cje
