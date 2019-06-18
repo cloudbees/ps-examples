@@ -2,7 +2,7 @@
 scripts to setup a k8s cluster in GKE
 For further information see see https://go.cloudbees.com/docs/cloudbees-core/cloud-install-guide/gke-install/#prerequisites  
 
-A google account is requzired
+A google account is required
 
 Usage:
 
@@ -34,7 +34,7 @@ Usage:
 #Create Ingress
 
 ```
-./03-cluster-create-ingress.sh
+./03-create-ingress.sh
 ```
 
 

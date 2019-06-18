@@ -1,1 +1,1 @@
-script to create cloudspecific 8s cluster
+script to create cloudspecific k8s cluster
