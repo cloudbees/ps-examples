@@ -1,0 +1,1 @@
+script to create cloudspecific 8s cluster
