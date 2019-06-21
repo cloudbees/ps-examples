@@ -1,0 +1,42 @@
+= Cloudbees CJE traditional Platform Tutorial
+Firstname Lastname <lcorbo@cloudbees.com>
+1.0, March 26, 2019, Asciidoctor .1 article template
+:toc:
+:imagesdir: images
+:icons: font
+:quick-uri: https://www.cloudbees.com/
+
+image::cloudbees-jenkins-logos.png[Cloudbees, align="center"]
+
+This tutorial is show our to create a localized test environment of Cloudbees CJE, consisting of:
+
+1. 1x Operation Center
+2. 2x Client Masters
+3. 1x Shared Agent
+
+
+== Prerequisites
+
+In order to follow this guide you'll need to have some basic familiarity with the following tools.
+
+1. https://github.com/[Github]
+2. https://www.virtualbox.org/[VirtualBox]
+3. https://www.vagrantup.com/[Vagrant]
+
+You will also need to an open internet connection as many steps will require software to be downloaded from public sites.
+
+The servers we will be building and installing will be *CentOS 7.4*, and commands ran on them will be covered in this guide.
+
+
+== Basic Architectural Design
+
+.Our Design
+image::arc-dia.png[align="center"]
+
+The design we are going to build and configure will be an Operations Center connected to two masters and a shared agent that can be used by either master. We will then create example jobs on both masters that explicitly.
+
+This is a basic design, meant to be the a minimal viable configuration to illustrate functionality.  To be set up and demonstrated used the fewest number of steps possible.
+
+It is not meant as an example of best practices, or optimal tuning.  It is also going to be deployed using https://www.vagrantup.com/[Vagrant] which is not intended for maintaining production environments.
+
+link:2-IaC{outfilesuffix}[Next: Building the environment.]
