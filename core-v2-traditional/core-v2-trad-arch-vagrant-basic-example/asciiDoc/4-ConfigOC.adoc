@@ -1,0 +1,75 @@
+= Cloudbees CJE traditional Platform Tutorial
+Firstname Lastname <lcorbo@cloudbees.com>
+1.0, March 26, 2019, Asciidoctor .1 article template
+:toc:
+:imagesdir: images\ConfigOC
+:icons: font
+:quick-uri: https://www.cloudbees.com/
+
+image::..\cloudbees-jenkins-logos.png[Cloudbees, align="center"]
+
+# Configuring the Operation Center
+
+# Configuring the First Master
+
+In a terminal with the current working path set to the repository we've been working out of (Assume this for all future terminal commands.) enter the following commands
+
+....
+vagrant ssh oc
+sudo cat /var/lib/cloudbees-core-oc/secrets/initialAdminPassword
+exit
+....
+
+You will receive a random series of letters and numbers that will be your initial logon password.  Open up your web browser, and go to:
+
+....
+192.168.32.10:8888
+....
+
+here
+
+image::01-screenshot.png[Cloudbees, 1200, align="center"]
+
+Select "Use a license key"
+
+image::02-screenshot.png[Cloudbees, 1200, align="center"]
+
+Using the provided instance ID, retrieve a License Key and License Certificate.  Contact a Cloudbees representative if you do not currently have the ability to preform this action on your own.
+
+image::03-screenshot.png[Cloudbees, 1200, align="center"]
+
+Select "Install suggested plugins"
+
+image::04-screenshot.png[Cloudbees, 1200, align="center"]
+
+Wait for plugins to install.
+
+image::05-screenshot.png[Cloudbees, 1200, align="center"]
+
+Select "install"
+
+image::06-screenshot.png[Cloudbees, 1200, align="center"]
+
+Create your first Admin user account.  When done select "Save and Continue"
+
+image::07-screenshot.png[Cloudbees, 1200, align="center"]
+
+Select "Save and Finish"
+
+image::08-screenshot.png[Cloudbees, 1200, align="center"]
+
+Select "restart"
+
+image::09-screenshot.png[Cloudbees, 1200, align="center"]
+
+Now login using the admin account you just created.
+
+image::10-screenshot.png[Cloudbees, 1200, align="center"]
+
+Welcome to Jenkins!  We've just stood up our operations center.
+
+image::11-screenshot.png[Cloudbees, 1200, align="center"]
+
+Now we just need some client masters to connect.
+
+link:5-ConfigMaster1{outfilesuffix}[Next: Configuring the first Master.]
