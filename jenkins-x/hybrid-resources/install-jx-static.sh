@@ -1,0 +1,14 @@
+jx create cluster gke \
+    --cluster-name ${CLUSTER_NAME} \
+    --project-id ${PROJECT} \
+    --region ${REGION} \
+    --machine-type n1-standard-2 \
+    --min-num-nodes 1 \
+    --max-num-nodes 2 \
+    --default-admin-password=admin \
+    --default-environment-prefix jx-rocks \
+    --git-provider-kind github \
+    --git-username ${GITHUB_USER} \
+    --git-provider-kind github \
+    --git-api-token ${GITHUB_TOKEN} \
+    --batch-mode
