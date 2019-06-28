@@ -1,0 +1,110 @@
+pipeline {
+    agent {
+        kubernetes {
+        //cloud 'kubernetes'
+        label 'test'
+        yaml """
+kind: Pod
+metadata:
+  name: test
+spec:
+  containers:
+  - name: curl
+    image: byrnedo/alpine-curl
+    command:
+    - cat
+    tty: true
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    imagePullPolicy: Always
+    command:
+    - /busybox/cat
+    tty: true
+    volumeMounts:
+      - name: jenkins-docker-cfg
+        mountPath: /root
+  nodeSelector: 
+    agentpool: builds
+  volumes:
+  - name: jenkins-docker-cfg
+    projected:
+      sources:
+      - secret:
+          name: regcred
+          items:
+            - key: .dockerconfigjson
+              path: .docker/config.json
+"""
+        }
+    }
+    environment {
+        CJOC_URL    = 'http://cjoc/cjoc'
+        CLI_VERSION = ''
+        REGISTRY    = 'index.docker.io'
+        REPO        = 'caladreas'
+        IMAGE       = 'cbcore-cli'
+    }
+    stages {
+        stage('Download CLI') {
+            steps {
+                container('curl') {
+                    sh 'curl --version'
+                    sh 'echo ${CJOC_URL}/jnlpJars/jenkins-cli.jar'
+                    sh 'curl ${CJOC_URL}/jnlpJars/jenkins-cli.jar --output jenkins-cli.jar'
+                    sh 'ls -lath'
+                }
+            }
+        }
+        stage('Prepare') {
+            parallel {
+                stage('Verify CLI') {
+                    environment {
+                        CREDS   = credentials('jenkins-api')
+                        CLI     = "java -jar jenkins-cli.jar -noKeyAuth -s ${CJOC_URL} -auth"
+                    }
+                    steps {
+                        sh 'echo ${CLI}'
+                        script {
+                            CLI_VERSION = sh returnStdout: true, script: '${CLI} ${CREDS} version'
+                        }
+                        sh 'echo ${CLI_VERSION}'
+                    }
+                }
+                stage('Prepare Dockerfile') {
+                    steps {
+                        writeFile encoding: 'UTF-8', file: 'Dockerfile', text: """FROM mcr.microsoft.com/java/jre-headless:8u192-zulu-alpine
+WORKDIR /usr/bin
+ADD jenkins-cli.jar .
+RUN pwd
+RUN ls -lath
+"""
+                    }
+                }
+            }
+        }
+        stage('Build with Kaniko') {
+            environment { 
+                PATH = "/busybox:/kaniko:$PATH"
+                TAG  = "${CLI_VERSION}"
+            }
+            steps {
+                sh 'echo image fqn=${REGISTRY}/${REPO}/${IMAGE}:${TAG}'
+                container(name: 'kaniko', shell: '/busybox/sh') {
+                    sh '''#!/busybox/sh
+                    /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --cleanup --cache=true --destination=${REGISTRY}/${REPO}/${IMAGE}:${TAG}
+                    /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --cleanup --cache=true --destination=${REGISTRY}/${REPO}/${IMAGE}:latest
+                    '''
+                }
+            }
+        }
+        stage('Test Image') {
+            options {
+                timeout(time: 60, unit: 'SECONDS')
+            }
+            steps {
+                build 'ops/jenkins-cli-image-verification'
+            }
+        }
+    }
+}
+
