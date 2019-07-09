@@ -19,6 +19,6 @@ echo $policybinding "roles/iam.serviceAccountUser"
 
 
 
-gcloud iam service-accounts keys create google-credentials.json --iam-account "$IAM_USER@$PROJECT_ID.iam.gserviceaccount.com"
+gcloud iam service-accounts keys create $GOOGLE_CREDENTIALS --iam-account "$IAM_USER@$PROJECT_ID.iam.gserviceaccount.com"
 
-export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/google-credentials.json
+export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/$GOOGLE_CREDENTIALS
