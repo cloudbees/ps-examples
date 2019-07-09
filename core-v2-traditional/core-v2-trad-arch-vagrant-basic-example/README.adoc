@@ -1,0 +1,15 @@
+# core-v2-trad-arch-vagrant-basic-example
+
+This is an example of an extremely basic setup of Cloudbees Core Traditional using vagrant.  It uses the most minimum number of steps to show functionality.
+
+## Dependancies
+
+This example requires the use of
+* vagrant
+
+Not having the above installed will prevent successful execution of the tutorial.
+
+
+## Recommended Usage
+
+Follow the tutorial guide link:asciiDoc/1-Intro{outfilesuffix}[here.]

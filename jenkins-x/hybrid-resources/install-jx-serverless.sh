@@ -1,0 +1,16 @@
+jx install \
+    --provider $PROVIDER \
+    --external-ip $LB_IP \
+    --domain $DOMAIN \
+    --default-admin-password=admin \
+    --ingress-namespace $INGRESS_NS \
+    --ingress-deployment $INGRESS_DEP \
+    --default-environment-prefix tekton \
+    --git-provider-kind github \
+    --namespace ${INSTALL_NS} \
+    --prow \
+    --docker-registry gcr.io \
+    --docker-registry-org $PROJECT \
+    --tekton \
+    --kaniko \
+    -b
