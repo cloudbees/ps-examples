@@ -16,8 +16,12 @@ helm init --service-account tiller
 
 kubectl -n kube-system rollout status deploy tiller-deploy
 
+echo "wait 60 sec for DNS"
+sleep 60
 
 export LB_IP=$(kubectl -n ingress-nginx \
     get svc -o jsonpath="{.items[0].status.loadBalancer.ingress[0].ip}")
 
 echo $LB_IP # It might take a while until LB is created. Repeat the `export` command if the output is empty.
+
+echo "cje.$LB_IP.xip.io"
