@@ -2,8 +2,9 @@
 
 source ./set-env.sh
 
-IAM_USER=$(gcloud config get-value account)
-IAM_USER=${IAM_USER%@*}
+
+
+IAM_USER=${ACCOUNT%@*}
 gcloud iam service-accounts create  $IAM_USER
 
 policybinding (){
