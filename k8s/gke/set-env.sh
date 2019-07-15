@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 
 export KUBE_CONFIG=~/.kube/config
+export SECRET_NAME=cjexipio-self-signed-cert-secret
+export CERT_DIR=$(pwd)/cert
 export PROJECT_ID=ps-dev-201405
 #see https://cloud.google.com/apis/design/resource_names
 export PROJECT_RESOURCE=//cloudresourcemanager.googleapis.com/projects/$PROJECT_ID
 export GOOGLE_CREDENTIALS="google-credentials.json"
-export NAMESPACE=cje
+export NAMESPACE=cloudbees-core
+export APP=cloudbees-core
+
 if [ -f $(pwd)/"$GOOGLE_CREDENTIALS" ]
 then
     export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/$GOOGLE_CREDENTIALS
@@ -31,4 +35,25 @@ echo "PROJECT_ID: $PROJECT_ID"
 echo "SERVICE_ACCOUNT (SA): $SA"
 
 
+exportDOMAIN_NAME ()
+{
+        echo "called $0 $@"
+        while [ ! -n "$DOMAIN_NAME" ]
+        do
+            echo "DOMAIN_NAME is null, retry in 15 sec...."
+            sleep 15
+            export DOMAIN_NAME=$(kubectl -n ingress-nginx  get svc -o jsonpath="{.items[0].status.loadBalancer.ingress[0].ip}")
+        done
+        echo "export DOMAIN_NAME=$DOMAIN_NAME"
+        return 0
 
+}
+exportXIPIO ()
+{
+        echo "called $0 $@"
+        exportDOMAIN_NAME
+        export XIPIO="cje.$DOMAIN_NAME.xip.io"
+        echo "export XIPIO=$XIPIO"
+        return 0
+
+}
