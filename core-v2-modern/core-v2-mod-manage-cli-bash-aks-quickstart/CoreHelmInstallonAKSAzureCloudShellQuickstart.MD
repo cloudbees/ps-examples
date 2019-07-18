@@ -50,3 +50,9 @@ Overwrite? (y/n): y
 A different object named clusterUser_cloud-shell-storage-eastus_zzManagedCluster already exists in your kubeconfig file.
 Overwrite? (y/n): y
 Merged "zzManagedCluster" as current context in /home/zzimmerman/.kube/config
+***
+Upgrading your CloudBees Core AKS infrastructure via Helm:
+helm upgrade cloudbees-core --set OperationsCenter.HostName='{{cloudbees-core.example.com}}' --set nginx-ingress.Enabled=true --set OperationsCenter.ServiceType='ClusterIP' cloudbees/cloudbees-core
+
+Add new ip address from nginx-ingress EXTERNAL ip address to DNS records and A names.
+Be patient during this process.
