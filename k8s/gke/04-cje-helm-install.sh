@@ -22,15 +22,18 @@ helm repo update
 kubectl create namespace $NAMESPACE
 kubectl config set-context $(kubectl config current-context) --namespace=$NAMESPACE
 #helm install --name $APP --set OperationsCenter.HostName="$XIPIO" --namespace $NAMESPACE cloudbees/$APP
-echo "helm install --name $APP \
+echo "helm upgrade --install   $APP \
     --set OperationsCenter.HostName=\"https://$XIPIO\" \
     --set OperationsCenter.Ingress.tls.Enable=true \
     --set OperationsCenter.Ingress.tls.SecretName=\"$SECRET_NAME\" \
     --namespace=\"$NAMESPACE\" \
     cloudbees/cloudbees-core"
-helm install --name $APP \
+
+helm upgrade --install  $APP \
     --set OperationsCenter.HostName="$XIPIO" \
     --set OperationsCenter.Ingress.tls.Enable=true \
+    --set OperationsCenter.ServiceType='ClusterIP' \
+    --set nginx-ingress.Enabled=true \
     --set OperationsCenter.Ingress.tls.SecretName="$SECRET_NAME" \
     --namespace="$NAMESPACE" \
     cloudbees/cloudbees-core
