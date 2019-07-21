@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
+set +
 
 export KUBE_CONFIG=~/.kube/config
-export SECRET_NAME=cjexipio-self-signed-cert-secret
+export SECRET_NAME=letsenrypt-secret
+#export CERT_DIR=/Users/andreascaternberg/projects/caternberg.eu/
 export CERT_DIR=$(pwd)/cert
 export PROJECT_ID=ps-dev-201405
 #see https://cloud.google.com/apis/design/resource_names
@@ -9,6 +11,7 @@ export PROJECT_RESOURCE=//cloudresourcemanager.googleapis.com/projects/$PROJECT_
 export GOOGLE_CREDENTIALS="google-credentials.json"
 export NAMESPACE=cloudbees-core
 export APP=cloudbees-core
+export DOMAIN="cb-core.caternberg.eu"
 
 if [ -f $(pwd)/"$GOOGLE_CREDENTIALS" ]
 then
@@ -52,7 +55,8 @@ exportXIPIO ()
 {
         echo "called $0 $@"
         exportDOMAIN_NAME
-        export XIPIO="cje.$DOMAIN_NAME.xip.io"
+       # export XIPIO="cje.$DOMAIN_NAME.xip.io"
+        export XIPIO="caternberg.eu"
         echo "export XIPIO=$XIPIO"
         return 0
 

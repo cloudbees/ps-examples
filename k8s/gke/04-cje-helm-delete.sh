@@ -3,7 +3,7 @@
 source ./set-env.sh
 
 helm del --purge $APP
-
+kubectl delete namespace $NAMESPACE
 # Teardown
 
 ##Stopping Operations Center
