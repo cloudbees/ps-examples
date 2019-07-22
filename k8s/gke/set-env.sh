@@ -38,25 +38,24 @@ echo "PROJECT_ID: $PROJECT_ID"
 echo "SERVICE_ACCOUNT (SA): $SA"
 
 
-exportDOMAIN_NAME ()
+exportLB_IP ()
 {
         echo "called $0 $@"
         while [ ! -n "$DOMAIN_NAME" ]
         do
             echo "DOMAIN_NAME is null, retry in 15 sec...."
-            sleep 15
-            export DOMAIN_NAME=$(kubectl -n ingress-nginx  get svc -o jsonpath="{.items[0].status.loadBalancer.ingress[0].ip}")
+            sleep 5
+            export LB_IP=$(kubectl -n ingress-nginx  get svc -o jsonpath="{.items[0].status.loadBalancer.ingress[0].ip}")
         done
-        echo "export DOMAIN_NAME=$DOMAIN_NAME"
+        echo "export LB_IP=$LB_IP"
         return 0
 
 }
 exportXIPIO ()
 {
         echo "called $0 $@"
-        exportDOMAIN_NAME
-       # export XIPIO="cje.$DOMAIN_NAME.xip.io"
-        export XIPIO="caternberg.eu"
+        exportLB_IP
+        export XIPIO="cje.$DOMAIN_NAME.xip.io"
         echo "export XIPIO=$XIPIO"
         return 0
 

@@ -16,6 +16,9 @@ kubectl apply -f ../yaml/patch-nginx-ingress-clusterrole.yaml
 
 helm init --service-account tiller
 
+kubectl apply -f https://raw.githubusercontent.com/vfarcic/k8s-specs/master/helm/tiller-rbac.yml
+
+
 
 helm install --namespace ingress-nginx --name nginx-ingress stable/nginx-ingress \
              --set controller.service.externalTrafficPolicy=Local \

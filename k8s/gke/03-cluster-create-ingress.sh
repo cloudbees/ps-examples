@@ -2,6 +2,8 @@
 
 source ./set-env.sh
 
+
+
 #patch ingress see https://support.cloudbees.com/hc/en-us/articles/360020511351-Helm-install-of-stable-nginx-ingress-fails-to-deploy-the-Ingress-Controller
 kubectl apply -f yaml/patch-nginx-ingress-clusterrole.yaml
 
