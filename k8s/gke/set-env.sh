@@ -1,16 +1,62 @@
 #!/usr/bin/env bash
+set +
 
-if [ -f $(pwd)/google-credentials.json ]
+export KUBE_CONFIG=~/.kube/config
+export SECRET_NAME=letsenrypt-secret
+#export CERT_DIR=/Users/andreascaternberg/projects/caternberg.eu/
+export CERT_DIR=$(pwd)/cert
+export PROJECT_ID=ps-dev-201405
+#see https://cloud.google.com/apis/design/resource_names
+export PROJECT_RESOURCE=//cloudresourcemanager.googleapis.com/projects/$PROJECT_ID
+export GOOGLE_CREDENTIALS="google-credentials.json"
+export NAMESPACE=cloudbees-core
+export APP=cloudbees-core
+export DOMAIN="cb-core.caternberg.eu"
+
+if [ -f $(pwd)/"$GOOGLE_CREDENTIALS" ]
 then
-    export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/google-credentials.json
+    export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/$GOOGLE_CREDENTIALS
 else
     gcloud auth login --quiet
 fi
-CLUSTER_NAME=$(gcloud config get-value account)
-export CLUSTER_NAME=ps-dev-${CLUSTER_NAME%@*}
-export KUBE_CONFIG=~/.kube/config
-export PROJECT_ID=ps-dev-201405
-echo $CLUSTER_NAME
-export NAMESPACE=cje
+
+export ACCOUNT=$(gcloud config get-value account)
+export CLUSTER_NAME=ps-dev-${ACCOUNT%@*}
+export SA="$ACCOUNT.iam.gserviceaccount.com"
+
+#set defaults
+gcloud config set project $PROJECT_ID
+gcloud config set compute/zone us-east1
+gcloud config set compute/region us-east1
+gcloud components update
+
+#ccreate credentials
+gcloud iam service-accounts keys create $GOOGLE_CREDENTIALS  --iam-account=$SA
+
+echo "CLUSTER_NAME: $CLUSTER_NAME"
+echo "PROJECT_ID: $PROJECT_ID"
+echo "SERVICE_ACCOUNT (SA): $SA"
 
 
+exportLB_IP ()
+{
+        echo "called $0 $@"
+        while [ ! -n "$DOMAIN_NAME" ]
+        do
+            echo "DOMAIN_NAME is null, retry in 15 sec...."
+            sleep 5
+            export LB_IP=$(kubectl -n ingress-nginx  get svc -o jsonpath="{.items[0].status.loadBalancer.ingress[0].ip}")
+        done
+        echo "export LB_IP=$LB_IP"
+        return 0
+
+}
+exportXIPIO ()
+{
+        echo "called $0 $@"
+        exportLB_IP
+        export XIPIO="cje.$DOMAIN_NAME.xip.io"
+        echo "export XIPIO=$XIPIO"
+        return 0
+
+}

@@ -2,22 +2,17 @@
 
 source ./set-env.sh
 
-#kubectl apply -f     https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/mandatory.yaml
-kubectl apply \
-  -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/1cd17cd12c98563407ad03812aebac46ca4442f2/deploy/mandatory.yaml
-#kubectl apply -f     https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/provider/cloud-generic.yaml
-kubectl apply \
-   -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/1cd17cd12c98563407ad03812aebac46ca4442f2/deploy/provider/cloud-generic.yaml
-
-kubectl apply --record \
-    -f https://raw.githubusercontent.com/vfarcic/k8s-specs/master/helm/tiller-rbac.yml
-
-helm init --service-account tiller
-
-kubectl -n kube-system rollout status deploy tiller-deploy
 
 
-export LB_IP=$(kubectl -n ingress-nginx \
-    get svc -o jsonpath="{.items[0].status.loadBalancer.ingress[0].ip}")
+#patch ingress see https://support.cloudbees.com/hc/en-us/articles/360020511351-Helm-install-of-stable-nginx-ingress-fails-to-deploy-the-Ingress-Controller
+kubectl apply -f yaml/patch-nginx-ingress-clusterrole.yaml
 
-echo $LB_IP # It might take a while until LB is created. Repeat the `export` command if the output is empty.
+#Deploy NGINX Ingress Controller
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.23.0/deploy/mandatory.yaml
+#Deploy the service creating the Load Balancer
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.23.0/deploy/provider/cloud-generic.yaml
+
+
+kubectl get services -n ingress-nginx

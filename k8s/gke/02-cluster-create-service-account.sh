@@ -2,8 +2,9 @@
 
 source ./set-env.sh
 
-IAM_USER=$(gcloud config get-value account)
-IAM_USER=${IAM_USER%@*}
+
+
+IAM_USER=${ACCOUNT%@*}
 gcloud iam service-accounts create  $IAM_USER
 
 policybinding (){
@@ -19,6 +20,6 @@ echo $policybinding "roles/iam.serviceAccountUser"
 
 
 
-gcloud iam service-accounts keys create google-credentials.json --iam-account "$IAM_USER@$PROJECT_ID.iam.gserviceaccount.com"
+gcloud iam service-accounts keys create $GOOGLE_CREDENTIALS --iam-account "$IAM_USER@$PROJECT_ID.iam.gserviceaccount.com"
 
-export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/google-credentials.json
+export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/$GOOGLE_CREDENTIALS
