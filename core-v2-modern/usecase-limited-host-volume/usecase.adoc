@@ -108,7 +108,43 @@ See link:https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#an-e
 .PodTemplateRawYaml
 [source,yaml]
 ----
-include::podtemplate-v1.yaml[]
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    volume: volume1
+    build: volume
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: com.cloudbees.demo
+            operator: In
+            values:
+            - true
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: volume
+            operator: In
+            values:
+            - volume1
+        topologyKey: "kubernetes.io/hostname"
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 1000
+  containers:
+  - name: jnlp
+    volumeMounts:
+    - mountPath: /home/gradle
+      name: my-volume-1
+  volumes:
+  - hostPath:
+      path: /tmp/test
+    name: my-volume-1
 ----
 
 == Pipeline Configuration
@@ -125,5 +161,19 @@ kubectl get po -o wide -l build=volume
 .Jenkinsfile
 [source,groovy]
 ----
-include::Jenkinsfile[]
+pipeline {
+    agent { label 'default-v2||default-v1||default-vx' }
+    stages {
+        stage('Test') {
+            steps {
+                println 'hello world'
+            }
+        }
+        stage('Sleep') {
+            steps {
+                sleep 60
+            }
+        }
+    }
+}
 ----
