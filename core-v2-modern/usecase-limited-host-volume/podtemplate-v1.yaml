@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    volume: volume1
+    build: volume
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: com.cloudbees.demo
+            operator: In
+            values:
+            - true
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: volume
+            operator: In
+            values:
+            - volume1
+        topologyKey: "kubernetes.io/hostname"
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 1000
+  containers:
+  - name: jnlp
+    volumeMounts:
+    - mountPath: /home/gradle
+      name: my-volume-1
+  volumes:
+  - hostPath:
+      path: /tmp/test
+    name: my-volume-1
