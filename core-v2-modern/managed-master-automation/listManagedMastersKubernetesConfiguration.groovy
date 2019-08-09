@@ -1,11 +1,11 @@
 // This will only work when run against an Operations Center instance.
 
-import jenkins.*
-import jenkins.model.*
-import hudson.*
-import hudson.model.*
 import com.cloudbees.masterprovisioning.kubernetes.KubernetesMasterProvisioning
 import com.cloudbees.opscenter.server.model.ManagedMaster
+import hudson.*
+import hudson.model.*
+import jenkins.*
+import jenkins.model.*
 
 def props = [
         "allowExternalAgents",
@@ -30,7 +30,10 @@ def props = [
         "storageClassName",
         "systemProperties",
         "terminationGracePeriodSeconds",
-        "yaml"]
+        "yaml",
+        "dockerImage",
+        "computedSystemProperties",
+]
 
 def allMMs = Jenkins.get().getAllItems(ManagedMaster.class)
 
@@ -42,7 +45,12 @@ allMMs.each { managedMaster ->
     KubernetesMasterProvisioning kmp = (KubernetesMasterProvisioning) managedMaster.getConfiguration();
 
     props.each {
-        def value = kmp."$it"
+        def value = kmp?."$it"
         println "$it: $value"
     }
+
+    def state = managedMaster.getState()
+    println("state: $state")
+
+    println "validActionSet:" + managedMaster.getValidActionSet()
 }
