@@ -13,7 +13,7 @@ It can be targeted at a specific master by passing in the following fields:
 **Optional**
 -m | --master-namespace MASTER_NAMESPACE (if no value is passed in, then the CJOC_NAMESPACE will be used)
 
-## Set of Masters
+## Set of Masters by Mapping File
 
 It can also be targeted at a set of masters by passing in a mapping file that is a CSV where column one is the master name and column two is the master namespace. Pass in the following fields:
 
@@ -30,6 +30,11 @@ master-name1,master-namespace1
 master-name2,master-namespace2
 master-name3,master-namespace3
 ```
+
+## Set of Masters with Dynamically Built Mapping File
+
+By passing `-a true`, the script will build the mapping file for all masters dynamically. The user running the script **MUST HAVE** cluster admin privileges, otherwise the script will not work in this manner as it requires access to all namespaces.
+
 
 ### To-Do
 

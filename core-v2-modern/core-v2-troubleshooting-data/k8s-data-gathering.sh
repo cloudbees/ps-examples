@@ -20,6 +20,8 @@ master-name3,master-namespace3
 For this to work, the -c CJOC_NAMESPACE will still need to be passed in to the script.
 
 
+Finally, by passing `-a true`, the script will build the mapping file for all masters dynamically. The user running the script **MUST HAVE** cluster admin privileges, otherwise the script will not work in this manner as it requires access to all namespaces.
+
 
 ######## TO DO --
 
