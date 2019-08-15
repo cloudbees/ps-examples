@@ -35,9 +35,9 @@ gather_data_initial()
 {
     mkdir core-modern-data && cd core-modern-data
     kubectl get node -o yaml > node.yaml
-    kubectl cluster-info dump --output-directory=./cluster-state/
-    cd cluster-state
-    kubectl cluster-info > 000-cluster-info.txt
+    kubectl cluster-info dump -n $cjoc_namespace --output-directory=./cluster-state-$cjoc_namespace/
+    cd cluster-state-$cjoc_namespace
+    kubectl cluster-info -n $cjoc_namespace > cluster-info-$cjoc_namespace.txt
     cd ..
     mkdir cjoc && cd cjoc
     kubectl cp cjoc-0:/var/jenkins_home/support/ ./cjoc-support/ -n $cjoc_namespace
@@ -56,6 +56,9 @@ gather_data_from_mapping_file(){
     do
         IFS=',' read -r -a array <<< "$line"
         master_name="${array[0]}"
+        if [ "${master_name: -2}" == "-0" ]; then
+            master_name=${master_name/-0/}
+        fi
         master_namespace="${array[1]}"
         namespace=$master_namespace
         mkdir $master_name && cd $master_name
@@ -84,6 +87,10 @@ connection_tests(){
     kubectl exec -ti $master_name-0 -n $master_namespace curl http://$(kubectl get svc cjoc -n $cjoc_namespace -o jsonpath='{.spec.clusterIP}')/cjoc/ > $master_name-curl-cjoc-ip.txt
     cd ..
     kubectl cp $master_name-0:/var/jenkins_home/support/ ./$master_name-support/ -n $master_namespace
+
+    if [ "$master_namespace" != "$cjoc_namespace" ]; then
+        kubectl cluster-info dump -n $master_namespace --output-directory=./cluster-state-$master_namespace/
+    fi
 }
 ##### END Functions
 
@@ -93,6 +100,7 @@ cjoc_namespace=
 master_name=
 master_namespace=
 mapping_file=
+get_all=false
 
 # Loop until all parameters are used to set vars
 while [ "$1" != "" ]; do
@@ -109,11 +117,30 @@ while [ "$1" != "" ]; do
         -f | --file )                               shift
                                                     mapping_file=$1
                                                     ;;
+        -a | --all  )                               shift
+                                                    get_all=$1
+                                                    ;;
     esac
     
     shift
 
 done
+
+if [ "$get_all" = "true" ]; then
+
+    STR1=$(kubectl get po --all-namespaces -l com.cloudbees.cje.type=master --no-headers -o custom-columns=":metadata.name",":metadata.namespace")
+    StrFix="$( echo "$STR1" | sed 's/[[:space:]][[:space:]]*/,/g')"
+
+    cjoc_namespace=$(kubectl get po --all-namespaces -l com.cloudbees.cje.type=cjoc --no-headers -o custom-columns=":metadata.namespace")
+
+    echo "$StrFix" > ./mapping_file.txt
+    map=$(echo `pwd`/mapping_file.txt)
+    mapping_file=$map
+    gather_data_initial
+    gather_data_from_mapping_file
+    exit 0
+fi
+
 
 if [ "$cjoc_namespace" = "" ]; then
     echo "ERROR: missing required field. Please pass in CJOC namespace value with '-c NAMESPACE' or '--cjoc-namespace NAMESPACE'"
