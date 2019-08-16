@@ -10,10 +10,9 @@ I would like teams to be able to self-service migrate jobs from CM to MM using
 the move/copy/promote functionality.
 
 ## Migration strategies 
-This scenario closely resembles the migration mentioned included in the
-[CloudBees Support Migration Guide](https://support.cloudbees.com/hc/en-us/articles/216241937-Migration-Guide-CloudBees-Jenkins-Platform-and-CloudBees-Jenkins-Team-)
-under Case A, option B:
-
+This scenario resembles the use case mentioned in the
+[CloudBees Migration Guide](https://support.cloudbees.com/hc/en-us/articles/216241937-Migration-Guide-CloudBees-Jenkins-Platform-and-CloudBees-Jenkins-Team-)
+under Case A, Option B.
 
 ### Prerequisites
 - An existing installation of Core traditional, AKA the source, with a CM that
@@ -49,17 +48,17 @@ under Case A, option B:
    - From the target CJOC, push connection information to the source CM
    - For more information on adding a CM to Core modern, see [this guide](https://go.cloudbees.com/docs/cloudbees-core/cloud-admin-guide/operating/#client-masters)
 
-#### Validation
+#### Validate
 1. Ensure RBAC works on the migrated CM
 2. Ensure each target MM has the correct RBAC permissions required for teams
    to move jobs using Move/Copy/Promote interface.
    - Teams will need at least the Move Job permission.
    - This is included in the "Developer" role in default RBAC setup
 
-#### Example Self Service Migration of a Team Folder
 Teams should now be able to move folders and jobs to which they have permissions
 from the source CM to their target MM.
 
+#### Example Self Service Migration of a Team Folder
 An example user view of a migrated Client Master:
 ![image0](images/image0.png)
 
