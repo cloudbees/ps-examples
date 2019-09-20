@@ -4,8 +4,8 @@
 
 ### Core for Modern Cloud platforms
 
-* [Namespace Considerations and Namespace Creation Script](core-modern/core-v2-namespace-considerations-and-namespace-creation-script/README.md)
-* [Troubleshooting Data](core-modern/core-v2-troubleshooting-data/README.md)
+* [Namespace Considerations and Namespace Creation script](core-modern/namespace-considerations-and-namespace-creation-script/README.md)
+* [Cluster Troubleshooting Data Gathering script](core-modern/troubleshooting-data/README.md)
 * [GitOps with Teams](core-modern/modern-teams-gitops/README.adoc)
 * [Self Service Client Master Migrations](core-modern/self-service-migrate-cm-to-mm/README.md)
 * [Limited host volume](core-modern/usecase-limited-host-volume/usecase.adoc)
@@ -24,7 +24,7 @@
 
 #### NO DOCUMENTATION
 
-* (core-modern/core-v2-create-gke)
+* (core-modern/create-gke)
 * (core-modern/core-v2-mod-manage-cli-bash-set-team-perm)
 * (core-modern/managed-master-automation)
 * (core-modern/pipeline-examples)
@@ -35,9 +35,11 @@
 
 ### JX
 
-* [GKE with Hybrid TLS](jenkins-x/gke-hybrid-tls-guide.adoc)
+* [GKE with Hybrid TLS](jenkins-x/jx-hybrid-tls/gke-hybrid-tls-guide.adoc)
 
 ### Kubernetes
+
+* [Shell scripts to create cloud-specific Kubernetes cluster](k8s/sh-create-k8s-cluster/README.md)
 
 ### Security
 
