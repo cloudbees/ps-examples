@@ -9,6 +9,7 @@
 * [GitOps with Teams](core-modern/modern-teams-gitops/README.adoc)
 * [Self Service Client Master Migrations](core-modern/self-service-migrate-cm-to-mm/README.md)
 * [Limited host volume](core-modern/usecase-limited-host-volume/usecase.adoc)
+* [Scripts for automating managed masters](core-modern/managed-master-automation)
 
 #### Azure
 
@@ -26,7 +27,6 @@
 
 * (core-modern/create-gke)
 * (core-modern/core-v2-mod-manage-cli-bash-set-team-perm)
-* (core-modern/managed-master-automation)
 * (core-modern/pipeline-examples)
 
 ### Core for Traditional platforms
