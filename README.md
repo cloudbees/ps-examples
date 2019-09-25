@@ -45,6 +45,10 @@
 
 * [AzureAD](security/azure-ad/azure-ad.adoc)
 
+### Not plateform related
+
+* [placeholder]()
+
 ## Contributing
 
 Please see [the contributors guide](CONTRIBUTING.md)
