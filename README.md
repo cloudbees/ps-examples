@@ -45,9 +45,9 @@
 
 * [AzureAD](security/azure-ad/azure-ad.adoc)
 
-### Not plateform related
+### Not platform or configuration management related
 
-* [placeholder]()
+* [placeholder](configuration/README.md)
 
 ## Contributing
 
