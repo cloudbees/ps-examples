@@ -15,23 +15,43 @@ The example directory contains the various command files in the directory `examp
 .nexus_docker-compose.yml
 [source,yml]
 ----
-include::example/nexus_docker-compose.yml[]
+version: '3'
+
+services:
+
+  nexus:
+    # The version must be pinned: later version have random default 
+    # password which make automation more complicated.
+    image: sonatype/nexus3:3.16.2
+    ports:
+      - "8081:8081"
+    volumes:
+      - nexus-data:/nexus-data
+
+volumes:
+
+  nexus-data:
+    driver: local
 ----
 
-Note the pinned version.
+Note the pinned image version.
 
 === Starting and stopping the Nexus container
 
 .start_nexus.sh
 [source,bash]
 ----
-include::example/start_nexus.sh[]
+#!/usr/bin/env bash
+
+docker-compose up -d 
 ----
 
 .stop_nexus.sh
 [source,bash]
 ----
-include::example/stop_nexus.sh[]
+#!/usr/bin/env bash
+
+docker-compose down
 ----
 
 === Configuring the proxy repository
@@ -44,7 +64,11 @@ The bash scripts are expected to run on the machine hosting the Docker container
 .load_nexus_script.sh
 [source,bash]
 ----
-include::example/load_nexus_script.sh[]
+#!/usr/bin/env bash
+
+curl -X POST -u admin:admin123 --header 'Content-Type: application/json' \
+    http://127.0.0.1:8081/service/rest/v1/script \
+    -d '{"name":"jenkins","type":"groovy","content":"repository.createMavenProxy('\''jenkins'\'','\''https://repo.cloudbees.com/content/repositories/dev-connect/'\'')"}'  
 ----
 
 === Executing the loaded groovy script
@@ -52,5 +76,7 @@ include::example/load_nexus_script.sh[]
 .execute_nexus_script.sh
 [source,bash]
 ----
-include::example/execute_nexus_script.sh[]
+#!/usr/bin/env bash
+
+curl -X POST -u admin:admin123 --header "Content-Type: text/plain" 'http://127.0.0.1:8081/service/rest/v1/script/jenkins/run'
 ----
