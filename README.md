@@ -43,6 +43,10 @@
 
 * [AzureAD](security/azure-ad/azure-ad.adoc)
 
-# Contributing
+## Configuration management
+
+* [Starting and configuring Nexus for Plugin Catalog](configuration/nexus-cfg/README.adoc)
+
+## Contributing
 
 Please see [the contributors guide](CONTRIBUTING.md)

@@ -1,0 +1,95 @@
+---
+# This playbook is supposed to run on a system with Docker enabled
+
+- name: "Include definitions and constants" 
+  include_vars: "definitions.yml"
+
+- name: Create directory for Nexus stuff
+  become: yes
+  file:
+    path: "{{ nexus_dir }}"
+    state: directory
+    mode: u=rwx,g=rx,o=rx
+
+- name: Copy docker Compose definition
+  become: yes
+  copy:
+    src: "nexus_docker-compose.yml"
+    dest: "{{ nexus_dir }}/docker-compose.yml"
+    force: no
+    backup: yes
+    owner: "root"
+    group: "root"
+    mode: u=rw,g=r,o=r
+
+- name: Copy the nexus start script
+  become: yes
+  copy:
+    src: "start_nexus.sh"
+    dest: "{{ nexus_dir }}/start_nexus.sh"
+    force: yes
+    backup: yes
+    owner: "root"
+    group: "root"
+    mode: u=rxw,g=rx,o=r
+
+- name: Copy the nexus stop script
+  become: yes
+  copy:
+    src: "stop_nexus.sh"
+    dest: "{{ nexus_dir }}/stop_nexus.sh"
+    force: yes
+    backup: yes
+    owner: "root"
+    group: "root"
+    mode: u=rxw,g=r,o=r
+
+- name: start the Nexus container
+  command: "./start_nexus.sh"
+  become: yes
+  args:
+    chdir: {{ nexus_dir }}
+
+- name: Copy the nexus script loader
+  become: yes
+  copy:
+    src: "load_nexus_script.sh"
+    dest: "{{ nexus_dir }}/load_nexus_script.sh"
+    force: yes
+    backup: yes
+    owner: "root"
+    group: "root"
+    mode: u=rxw,g=r,o=r
+
+- name: Copy the nexus script executor
+  become: yes
+  copy:
+    src: "execute_nexus_script.sh"
+    dest: "{{ nexus_dir }}/execute_nexus_script.sh"
+    force: yes
+    backup: yes
+    owner: "root"
+    group: "root"
+    mode: u=rxw,g=r,o=r
+
+- name: wait for nexus to be up
+  uri: 
+    url: "http://localhost:8081" 
+    status_code: "200" 
+  register: result
+  until: result.status == 200
+  retries: 60
+  delay: 1
+
+- name: load the nexus script to configure the jenkins proxy repository
+  command: "./load_nexus_script.sh"
+  become: yes
+  args:
+    chdir: {{ nexus_dir }}
+
+- name: execute the nexus script to configure the jenkins proxy repository
+  command: "./execute_nexus_script.sh"
+  become: yes
+  args:
+    chdir: {{ nexus_dir }}
+  
