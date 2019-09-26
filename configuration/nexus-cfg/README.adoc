@@ -1,0 +1,56 @@
+= Starting and configuring a Nexus server
+
+== Purpose
+
+Especially when demonstrating the Plugin Catalog functionality, a Nexus server is needed. The Plugin Catalog 
+also requires a special Maven2 proxy repository to be configured. This example shows how to start a Nexus
+server (as a Docker container) et to configure the needed repository via the Nexus CLI.
+
+The example directory contains the various command files in the directory `example` as well as a working Ansible role in the `ansible-role` directory.
+
+== Example directory inventory
+
+=== Docker compose
+
+.nexus_docker-compose.yml
+[source,yml]
+----
+include::example/nexus_docker-compose.yml[]
+----
+
+Note the pinned version.
+
+=== Starting and stopping the Nexus container
+
+.start_nexus.sh
+[source,bash]
+----
+include::example/start_nexus.sh[]
+----
+
+.stop_nexus.sh
+[source,bash]
+----
+include::example/stop_nexus.sh[]
+----
+
+=== Configuring the proxy repository
+
+The configuration is done with a groovy script that is loaded and then executed via the Nexus REST API.
+The bash scripts are expected to run on the machine hosting the Docker containers (`curl loacalhost`).
+
+==== loading the configuration groovy script on the Nexus server
+
+.load_nexus_script.sh
+[source,bash]
+----
+include::example/load_nexus_script.sh[]
+----
+
+=== Executing the loaded groovy script
+
+.execute_nexus_script.sh
+[source,bash]
+----
+include::example/execute_nexus_script.sh[]
+----

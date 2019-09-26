@@ -43,9 +43,9 @@
 
 * [AzureAD](security/azure-ad/azure-ad.adoc)
 
-### Not platform or configuration management related
+## Configuration management
 
-* [placeholder](configuration/README.md)
+* [Starting and configuring Nexus for Plugin Catalog](configuration/nexus-cfg/README.adoc)
 
 ## Contributing
 
