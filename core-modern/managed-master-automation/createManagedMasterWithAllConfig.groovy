@@ -2,11 +2,13 @@ package com.cloudbees.opscenter.server.model
 
 // This will only work when run against an Operations Center instance.
 
-// WARNING!!!
+// WARNING
+// This uses OperationsCenter classes to acheive the results desired, as well as sets default 
+// that are not standard. Any use of this script requires a full understanding of what it's doing
+// and how it will affect your installation.
 //
-// This is HIGHLY EXPERIMENTAL and should NOT be run against a production system. No guarantees of support are provided.
-//
-// WARNING!!!
+// The underlying OperationsCenter classes implementation may change in future verions and render this
+// obsolete and ineffective.
 
 import jenkins.*
 import jenkins.model.*
