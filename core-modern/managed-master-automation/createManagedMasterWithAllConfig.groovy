@@ -1,5 +1,4 @@
 package com.cloudbees.opscenter.server.model
-
 // This will only work when run against an Operations Center instance.
 
 // WARNING
@@ -10,6 +9,8 @@ package com.cloudbees.opscenter.server.model
 // The underlying OperationsCenter classes implementation may change in future verions and render this
 // obsolete and ineffective.
 
+// Usage: `java -jar jenkins-cli.jar -auth @/path/to/secret/token -s http://jenkins.example.com/cjoc/ groovy = test-master-name < createManagedMasterWithAllConfig.groovy`
+
 import jenkins.*
 import jenkins.model.*
 import hudson.*
@@ -19,8 +20,12 @@ import com.cloudbees.opscenter.server.model.ManagedMaster
 import com.cloudbees.opscenter.server.properties.ConnectedMasterLicenseServerProperty
 import com.cloudbees.opscenter.server.model.OperationsCenter
 
+if (args.length != 1 ) {
+  println "A single arg is required: masterName"
+}
+args.each{println it}
+String masterName = args[0]
 
-String masterName = "scripted-master-17"
 
 if(OperationsCenter.getInstance().getConnectedMasters().any { it?.getName()==masterName }) {
     println "Master with this name already exists."
