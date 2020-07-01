@@ -16,6 +16,7 @@
         "memoryMB": 2048,
         "cpu": 0.5,
         "jvmHeapMemoryRatio": 0.7
+        "namespace": dmartin
       },
       "default": true
     }

@@ -1,0 +1,115 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kubernetes.io/limit-ranger: 'LimitRanger plugin set: cpu request for container
+      jnlp'
+  creationTimestamp: 2019-04-29T14:32:10Z
+  labels:
+    jenkins: slave
+    jenkins/maven: "true"
+  name: single-pod-w1m1m
+  namespace: default
+  resourceVersion: "4062368"
+  selfLink: /api/v1/namespaces/default/pods/single-pod-w1m1m
+  uid: 92d2a784-6a8b-11e9-a204-42010a8000da
+spec:
+  containers:
+  - args:
+    - /var/jenkins_config/jenkins-agent
+    command:
+    - /bin/sh
+    env:
+    - name: JENKINS_SECRET
+      value: b07e50d4df3aa6bea7e1149427fe244e0c7068a8ee82ebaaca2b12a2a10c6b82
+    - name: JENKINS_AGENT_NAME
+      value: single-pod-w1m1m
+    - name: JENKINS_NAME
+      value: single-pod-w1m1m
+    - name: JENKINS_URL
+      value: http://teams-travel.default.svc.cluster.local/teams-travel/
+    - name: HOME
+      value: /home/jenkins
+    image: maven:alpine
+    imagePullPolicy: IfNotPresent
+    name: jnlp
+    resources:
+      requests:
+        cpu: 100m
+    securityContext:
+      privileged: false
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    tty: true
+    volumeMounts:
+    - mountPath: /var/jenkins_config
+      name: volume-0
+    - mountPath: /home/jenkins
+      name: workspace-volume
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-x5bn4
+      readOnly: true
+    workingDir: /home/jenkins
+  dnsPolicy: ClusterFirst
+  nodeName: gke-cb-ps-team-default-pool-07606e0f-bssl
+  priority: 0
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - configMap:
+      defaultMode: 420
+      name: jenkins-agent
+    name: volume-0
+  - emptyDir: {}
+    name: workspace-volume
+  - name: default-token-x5bn4
+    secret:
+      defaultMode: 420
+      secretName: default-token-x5bn4
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: 2019-04-29T14:32:10Z
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: 2019-04-29T14:32:12Z
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: null
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: 2019-04-29T14:32:10Z
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: docker://248d27c96ac27b721cf10424be72511a930a57cadf361d60cca0f95867ff1f03
+    image: maven:alpine
+    imageID: docker-pullable://maven@sha256:77f92c8e3f518980cd98f23bd7d7b14b4c5b014d624911a592d514d5e17a0870
+    lastState: {}
+    name: jnlp
+    ready: true
+    restartCount: 0
+    state:
+      running:
+        startedAt: 2019-04-29T14:32:12Z
+  hostIP: 10.128.0.80
+  phase: Running
+  podIP: 10.28.0.231
+  qosClass: Burstable
+  startTime: 2019-04-29T14:32:10Z
