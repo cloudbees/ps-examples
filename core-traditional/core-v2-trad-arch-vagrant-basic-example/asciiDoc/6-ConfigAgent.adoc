@@ -1,0 +1,65 @@
+= Cloudbees CJE traditional Platform Tutorial
+Firstname Lastname <lcorbo@cloudbees.com>
+1.0, March 26, 2019, Asciidoctor .1 article template
+:toc:
+:imagesdir: images/ConfigAgent
+:icons: font
+:quick-uri: https://www.cloudbees.com/
+
+image::..\cloudbees-jenkins-logos.png[Cloudbees, align="center"]
+
+# Configuring the Shared Agent
+
+If not currently there, open up your web browser, and go to:
+
+....
+192.168.32.10:8888
+....
+
+Log in if required.
+
+On the side bar, select "New Item"
+
+image::01-screenshot.png[Cloudbees, 1200, align="center"]
+
+Under "Enter an Item name" Put, *Agent01*.  Highlight "Shared Agent" by selecting it, and then select "ok".
+
+image::02-screenshot.png[Cloudbees, 1200, align="center"]
+
+Set the following feilds:
+
+* # of executors: 1
+* Remote FS root: /home/vagrant
+* Labels: agent
+
+Select "Save".
+
+image::03-screenshot.png[Cloudbees, 1200, align="center"]
+
+Select the highlighted "slave.jar" and download the slave.jar file to the repository we've been working out of.
+
+Copy the command string under "Run from agent command line:"
+
+image::04-screenshot.png[Cloudbees, 1200, align="center"]
+
+In a terminal, enter the following commands:
+
+....
+vagrant ssh agent
+ cp /vagrant/slave.jar .
+"<Paste command you just copied that started with java -jar> & disown -h %1
+....
+
+It's important to append "& disown -h %1" as it will allow use to exit out of the agent.
+
+Go back to your browser to the same screen we left in the previous step, it should now show as online.
+
+image::05-screenshot.png[Cloudbees, 1200, align="center"]
+
+Select Jenkins in the top left corner to return to the main screen on the *OC*.
+
+image::06-screenshot.png[Cloudbees, 1200, align="center"]
+
+Congrats, our deployment now has a shared agen.
+
+link:7-ConfigJob1{outfilesuffix}[Next: Configuring Our First Job.]

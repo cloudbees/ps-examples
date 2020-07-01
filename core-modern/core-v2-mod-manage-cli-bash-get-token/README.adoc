@@ -1,0 +1,33 @@
+# Get_Jenkins_Token.sh
+
+This is an example of using a bash script to obtain a Jenkins API token for a use with the Jenkins CLI, it obtains
+a crumb from the CJOC, this allows us to call the rest API without having to disable CSRF.
+
+## Dependancies
+
+This bash script requires that following applications to be installed available in path.
+* curl
+* jq
+* sed
+
+Not having the above installed will prevent successful execution.
+
+## Parameters
+
+This script requires three parameters
+
+* 1st is the URL of the Jenkins Modern Cluster.
+* 2nd is the USERNAME of an existing user setup on the Jenkins OC.
+* 3rd is the PASSWORD of the USERNAME.
+
+## Recommended Usage
+
+```
+JENKINS_TOKEN=$(bash Get_Jenkins_Token.sh $JENKINS_DOMAIN_NAME $JENKINS_USERNAME $JENKINS_PASSWORD)
+```
+
+It is recommended that all parameters are stored in variables as this keeps secrets like passwords from being stored in your history. It is also
+recommended that the output is also stored in a variable to make it easier use later within in the session.
+
+IMPORTANT: Every time you run this script a NEW api token will be generated.  Previously generated tokens will still exist.  Tokens can be managed in Jenkins under the user configuration
+page.

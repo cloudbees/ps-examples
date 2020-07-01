@@ -1,0 +1,83 @@
+= Cloudbees CJE traditional Platform Tutorial
+Firstname Lastname <lcorbo@cloudbees.com>
+1.0, March 26, 2019, Asciidoctor .1 article template
+:toc:
+:imagesdir: images
+:icons: font
+:quick-uri: https://www.cloudbees.com/
+
+image::cloudbees-jenkins-logos.png[Cloudbees, align="center"]
+
+
+When we ran vagrant in the last part, we pulled four identical server images and will end up with three different types of machines with configurations and software installed on them.  We will have:
+
+* OC
+* Masters
+* Agent
+
+*Configuration Management* is a systems engineering process for producing consistency of a settings and installed applications.  While there are many tools that can be used to achieve this, for our purposes we are using basic bash scripts to preform the fewest steps required to produce the results we need for this demonstration.
+
+The scripts are are reviewing are located in *scripts* folder in the repository we are using for this tutorial.
+
+# OC
+
+This scripts, oc.sh, configures the Operation Center.
+
+This script does three things:
+
+1. Installs a version of Java
+
+....
+yum install -y java-1.8.0-openjdk-devel
+....
+
+2. Installs a versions of Cloudbees Core Operation Center.
+
+....
+wget -O /etc/yum.repos.d/cloudbees-core-oc.repo https://downloads.cloudbees.com/cloudbees-core/traditional/operations-center/rolling/rpm/cloudbees-core-oc.repo
+rpm --import https://downloads.cloudbees.com/cloudbees-core/traditional/operations-center/rolling/rpm/cloudbees.com.key
+....
+
+3. Restarts the Operation Center service.
+
+....
+/etc/init.d/cloudbees-core-oc restart
+....
+
+# Master
+
+This script, master.sh, configures the Client Masters.  It is almost same as the OC script, but download and restarts a the cloudbees-core-cm instead of cloudbees-core-oc.
+
+1. Installs a version of Java
+
+....
+yum install -y java-1.8.0-openjdk-devel
+....
+
+2. Installs a versions of Cloudbees Core Client Masters.
+
+....
+wget -O /etc/yum.repos.d/cloudbees-core-cm.repo https://downloads.cloudbees.com/cloudbees-core/traditional/client-master/rolling/rpm/cloudbees-core-cm.repo
+rpm --import https://downloads.cloudbees.com/cloudbees-core/traditional/client-master/rolling/rpm/cloudbees.com.key
+yum install -y cloudbees-core-cm-2.138.4.3
+....
+
+3. Restarts the Operation Center service.
+
+....
+/etc/init.d/cloudbees-core-cm restart
+....
+
+# Agent
+
+This script, agent.sh, configures the Shared Agent.  This
+
+1. Installs a version of Java
+
+....
+yum install -y java-1.8.0-openjdk-devel
+....
+
+The rest of the agent configuration will be done as part of the tutorial.\
+
+link:4-ConfigOC{outfilesuffix}[Next: Configuring the Nodes.]

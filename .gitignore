@@ -1,2 +1,4 @@
 jenkins-cli.jar
 cli-add-teams/teams/
+.DS_Store
+.idea

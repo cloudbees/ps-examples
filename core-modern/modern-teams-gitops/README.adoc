@@ -1,0 +1,25 @@
+= Guide to GitOps with Team Masters
+
+== Requirements
+
+* Core Modern installation
+* Two credentials
+** github Token
+** Jenkins API Token
+
+== Steps
+
+* get container image with a appropriate CLI
+* git repository with the gitops setup
+* setup the credentials
+* setup the job
+* trigger the job via a git push
+
+== Create CLI Container Image
+
+* image creation job
+* image test job
+
+== Use GitOps Repo
+
+

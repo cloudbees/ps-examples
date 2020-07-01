@@ -1,0 +1,74 @@
+= Cloudbees CJE traditional Platform Tutorial
+Firstname Lastname <lcorbo@cloudbees.com>
+1.0, March 26, 2019, Asciidoctor .1 article template
+:toc:
+:imagesdir: images
+:icons: font
+:quick-uri: https://www.cloudbees.com/
+
+image::cloudbees-jenkins-logos.png[Cloudbees, align="center"]
+
+
+Now that we have picked an architecture for our Jenkins deployment, we need to define it as code and build it.  Since this is a tutorial, this has already been done for you.  Clone the the following repository to a workstation that have 1. https://github.com/[Github], https://www.virtualbox.org/[VirtualBox] and https://www.vagrantup.com/[Vagrant] already installed and configured and ready for use.
+
+....
+git clone https://github.com/lcorbo-cb/runbook-tp-vagrant.git
+....
+
+
+# The Vagrant File
+
+Once you have the repo cloned you'll too a file called *Vagrantfile*, this contains our infrastructure described as code.  This will build:
+
+1. 1x Operation Center
+2. 2x Client Masters
+3. 1x Shared Agent
+
+## Run Vagrant
+
+In the root directory of the repository, run:
+
+....
+vagrant up
+....
+
+This will build the environment, this might take a few minutes so while we wait lets review the code we just ran.
+
+## Understanding the code:
+
+This isn't a tutorial on vagrant, so we aren't going to cover everything.  However if you are new to this tool, first thing to point out is the syntax is actually just https://www.ruby-lang.org/en/[Ruby].  New to Ruby?  Well, it's really just repeated blocks of structured data.  You don't need to be able to code in Ruby to follow what it's describing here.
+
+First thing to note on line 2
+
+``  config.vm.box = "bento/centos-7.4"``
+
+This is defining what "*box*" we are using.  A box in the context of vagrant is just a pre-made virtual machine image that can be used by vagrant to deploy a virtual machine for you to use in your environment.
+
+In this example we are using a *centos-7.4*.
+
+Then second this to note is that this file is basically a pattern, repeated four times each a variation of:
+
+
+```
+config.vm.define "oc" do |oc|
+  oc.vm.network "private_network", ip: "192.168.32.10"
+  oc.vm.hostname = "oc"
+  oc.vm.provider "virtualbox" do |vb|
+    vb.cpus = 1
+    vb.memory = 1024
+  end
+  oc.vm.provision "shell", path: "scripts/oc.sh"
+end
+```
+
+Looks complicated, but all it's saying is that we:
+
+* want a server called "*oc*"
+* want it on our "private network" with an address of *192.168.32.10*
+* want the hostname to be *oc*
+* want it to have *1* cpu, and *1024* megabytes
+* want it to run a bash script called *oc.sh* when the server starts up
+
+For our purposes, we really only care about private network address, and the script runs on startup.  It's a private network, so it will appear on our workstation as an active IP address we can access, but it won't be available outside of our workstation.
+
+link:3-ConfigMan{outfilesuffix}[Next: Configuring the Nodes.]

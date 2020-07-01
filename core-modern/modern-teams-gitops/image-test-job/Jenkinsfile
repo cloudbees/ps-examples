@@ -1,0 +1,34 @@
+pipeline {
+    agent {
+        kubernetes {
+        label 'cli-jar-verification'
+        yaml """
+kind: Pod
+spec:
+  containers:
+  - name: cli
+    image: caladreas/cbcore-cli:latest
+    imagePullPolicy: Always
+    command:
+    - cat
+    tty: true
+"""
+        }
+    }
+    environment {
+        CJOC_URL    = 'http://cjoc/cjoc'
+    }
+    stages {
+        stage('Test CLI Container') {
+            environment {
+                CREDS   = credentials('jenkins-api')
+                CLI     = "java -jar /usr/bin/jenkins-cli.jar -noKeyAuth -s ${CJOC_URL} -auth"
+            }
+            steps {
+                container('cli') {
+                    sh '${CLI} ${CREDS} version'
+                }
+            }
+        }
+    }
+}

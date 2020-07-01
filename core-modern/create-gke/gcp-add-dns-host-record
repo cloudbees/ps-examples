@@ -1,0 +1,109 @@
+#!/usr/bin/env sh
+#
+#usage: `BASE_DOMAIN=some.domain.example.com SUBDOMAIN=new-subdomain OWNER_LABEL=username MANAGED_ZONE_NAME=gcp-dns-zone-name IP_ADDRESS=1.2.3.4 ./gcp-add-host-record`
+#
+#BASE_DOMAIN is an optional parameter, but only if the managed zone already exists
+#requirement is to have the BASE_DOMAIN set up with NS records pointing to GCP's DNS
+#
+set -eo pipefail
+
+# useful debugging:
+# echo "Values passed to script:"
+# echo "BASE_DOMAIN='$BASE_DOMAIN'"
+# echo "SUBDOMAIN='$SUBDOMAIN'"
+# echo "OWNER_LABEL='$OWNER_LABEL'"
+# echo "MANAGED_ZONE_NAME='$MANAGED_ZONE_NAME'"
+# echo "IP_ADDRESS='$IP_ADDRESS'"
+# echo "INGRESS_IP='$INGRESS_IP'"
+
+
+if [ -f transaction.yaml ]; then
+    echo "transaction.yaml detected in current directory. Cannot run with an existing gcp dns transaction in process."
+    exit 1
+fi
+
+
+if [ -z "$BASE_DOMAIN" ]; then
+    echo "Optional env var BASE_DOMAIN not specified for this run."
+else
+    #hacky way to ensure a trailing dot in the base domain name
+    BASE_DOMAIN=$( echo "$BASE_DOMAIN." | tr -s "." )
+fi
+
+if [ -z "$SUBDOMAIN" ]; then
+    echo "SUBDOMAIN required."
+    exit 1
+fi
+
+if [ -z "$OWNER_LABEL" ]; then
+    echo "OWNER_LABEL required."
+    exit 1
+fi
+
+if [ -z "$MANAGED_ZONE_NAME" ]; then
+    echo "MANAGED_ZONE_NAME required."
+    exit 1
+fi
+
+#require either env IP_ADDRESS or INGRESS_IP as a fallback option
+if [ -z "$IP_ADDRESS" ]; then
+    if [ -z "$INGRESS_IP" ]; then
+        echo "IP_ADDRESS OR INGRESS_IP required."
+        exit 1
+    else
+        IP_ADDRESS=$INGRESS_IP
+    fi
+fi
+
+#check if managed zone already exists
+if [[ $(gcloud dns managed-zones list --filter="name=$MANAGED_ZONE_NAME" --format="value(NAME)" 2>/dev/null) ]]; then
+    echo "Managed zone with this name was already exists."
+    EXISTING_BASE_DOMAIN=$(gcloud dns managed-zones describe $MANAGED_ZONE_NAME --format=json 2>/dev/null | jq -r '.dnsName')
+
+    if [ -z "$BASE_DOMAIN" ]; then
+        echo "Using already created managed zone's base domain."
+        BASE_DOMAIN=$EXISTING_BASE_DOMAIN
+    else
+        if [[ "$BASE_DOMAIN" = "$EXISTING_BASE_DOMAIN" ]]; then
+            echo "Existing base domain is: '$EXISTING_BASE_DOMAIN', and BASE_DOMAIN was defined and is: '$BASE_DOMAIN' -- continuing without issue."
+        else
+            echo "Existing base domain is: '$EXISTING_BASE_DOMAIN', but BASE_DOMAIN was defined and is: '$BASE_DOMAIN' -- exiting."
+            exit 1
+        fi
+    fi
+else
+    if [ -z "$BASE_DOMAIN" ]; then
+        echo "No existing managed zone. BASE_DOMAIN required."
+        exit 1
+    fi
+    gcloud dns managed-zones create $MANAGED_ZONE_NAME --dns-name="$BASE_DOMAIN" --description="zone for $OWNER_LABEL's domain" --visibility=public --labels=owner=$OWNER_LABEL
+fi
+
+echo "Describing managed zone:"
+gcloud dns managed-zones describe $MANAGED_ZONE_NAME
+echo ""
+
+DOMAIN_NAME=$SUBDOMAIN.$BASE_DOMAIN
+
+CURRENT_GCLOUD_IP=$(gcloud dns record-sets list --zone=$MANAGED_ZONE_NAME --filter="type=A AND NAME=$DOMAIN_NAME" --format="value(DATA)")
+if [ "$CURRENT_GCLOUD_IP" = "$IP_ADDRESS" ]; then
+    echo "Current gcloud dns entry equals desired ingress ip."
+else
+    #TODO, probably add failure detection in here and abort transaction
+    gcloud dns record-sets transaction start -z=$MANAGED_ZONE_NAME
+
+    if [ -z "$CURRENT_GCLOUD_IP" ]; then 
+        echo "No host record exists. Adding..."
+        gcloud dns record-sets transaction add -z=$MANAGED_ZONE_NAME --name="$DOMAIN_NAME" --type=A --ttl=300 "$IP_ADDRESS"
+    else
+        echo "The host record is already set. Updating..."
+        gcloud dns record-sets transaction remove -z=$MANAGED_ZONE_NAME --name="$DOMAIN_NAME" --type=A --ttl=300 "$CURRENT_GCLOUD_IP"
+        gcloud dns record-sets transaction add -z=$MANAGED_ZONE_NAME --name="$DOMAIN_NAME" --type=A --ttl=300 "$IP_ADDRESS"
+    fi
+
+    gcloud dns record-sets transaction execute -z=$MANAGED_ZONE_NAME
+
+fi
+
+
+

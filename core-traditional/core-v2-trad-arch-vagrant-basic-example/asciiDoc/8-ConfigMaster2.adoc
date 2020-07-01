@@ -1,0 +1,122 @@
+= Cloudbees CJE traditional Platform Tutorial
+Firstname Lastname <lcorbo@cloudbees.com>
+1.0, March 26, 2019, Asciidoctor .1 article template
+:toc:
+:imagesdir: images\ConfigMaster2
+:icons: font
+:quick-uri: https://www.cloudbees.com/
+
+image::..\cloudbees-jenkins-logos.png[Cloudbees, align="center"]
+
+# Configuring the First Master
+
+If not currently there, open up your web browser, and go to:
+
+....
+192.168.32.10:8888
+....
+
+Log in if required.
+
+On the side bar, select "New Item"
+
+image::01-screenshot.png[Cloudbees, 1200, align="center"]
+
+Under "Enter an Item name" Put, *Master02*.  Highlight "Client Master" by selecting it, and then select "ok".
+
+image::02-screenshot.png[Cloudbees, 1200, align="center"]
+
+Select Save.
+
+image::03-screenshot.png[Cloudbees, 1200, align="center"]
+
+Now the OC is ready to connect a master and label it as *Master02*.  However there is still one thing to do on the master we stood up.
+
+In a terminal, enter the following commands:
+
+....
+vagrant ssh master2
+sudo cat /var/lib/cloudbees-core-cm/secrets/initialAdminPassword
+exit
+....
+
+You will receive a random series of letters and numbers that will be your initial logon password.  Open a new browser tab, and go to:
+
+....
+192.168.32.12:8080
+....
+
+Enter that password in the available field and select continue.
+
+
+#Missing picture of entering password into new server
+
+
+image::04a-screenshot.png[Cloudbees, 1200, align="center"]
+
+Now go back to the browser tab opened to a *OC*.
+
+In the field labeled "Client master URL" Enter the URL of the master server we just setup.
+
+....
+http://192.168.32.12:8080
+....
+
+Now select "Push configuration"
+
+image::05-screenshot.png[Cloudbees, 1200, align="center"]
+
+Notice that the address in your browser and changed from
+
+....
+192.168.32.10:8888
+....
+to
+....
+192.168.32.12:8080
+....
+
+This shows that you are now working on this new master.  Select "Join Operation Center"
+
+
+image::06-screenshot.png[Cloudbees, 1200, align="center"]
+
+Select "Install suggested plugins".
+
+image::07-screenshot.png[Cloudbees, 1200, align="center"]
+
+Wait for plugins to install.
+
+image::08-screenshot.png[Cloudbees, 1200, align="center"]
+
+Create your first Admin user account.  This account is completely seperate from the one created when configuring the *OC*. When done select "Save and Continue".
+
+image::09-screenshot.png[Cloudbees, 1200, align="center"]
+
+Select "Start using CloudBees Core Client Master"
+
+image::10-screenshot.png[Cloudbees, 1200, align="center"]
+
+Now login using the admin account you just created.
+
+image::11-screenshot.png[Cloudbees, 1200, align="center"]
+
+Select "Manage Jenkins"
+
+image::12a-screenshot.png[Cloudbees, 1200, align="center"]
+
+Select "Configure Global Security"
+
+image::12-screenshot.png[Cloudbees, 1200, align="center"]
+
+Under "Agents" and by  "TCP port for JNLP agents" select "Ramndom"  Then select "Save".
+
+image::13-screenshot.png[Cloudbees, 1200, align="center"]
+
+Select "Master02" in the top left side of the corner.
+
+image::14-screenshot.png[Cloudbees, 1200, align="center"]
+
+Congrats, we've now added our first master.
+
+link:6-ConfigAgent{outfilesuffix}[Next: Configuring the Shared Agent.]

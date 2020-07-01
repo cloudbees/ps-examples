@@ -1,0 +1,183 @@
+#!/usr/bin/env sh
+
+set -eo pipefail
+
+if [ -z "$CLUSTER_NAME" ]; then
+    echo "No CLUSTER_NAME set. Required for cluster creation."
+    exit 1
+fi
+
+if [ -z "$GCLOUD_PROJECT" ]; then
+    echo "No GCLOUD_PROJECT set. Required for cluster creation."
+    exit 1
+fi
+
+if [ -z "$GCLOUD_ZONE" ]; then
+    echo "No GCLOUD_ZONE set. Required for cluster creation."
+    exit 1
+fi
+
+if [ -z "$OWNER_LABEL" ]; then
+    echo "No OWNER_LABEL set. Required for cluster creation."
+    exit 1
+fi
+
+if [ -z "$MACHINE_TYPE" ]; then
+    echo "No MACHINE_TYPE set. Required for cluster creation."
+    exit 1
+fi
+
+if [ -z "$MACHINE_DISK_SIZE" ]; then
+    echo "No MACHINE_DISK_SIZE set. Required for cluster creation."
+    exit 1
+fi
+
+if [ -z "$NUMBER_OF_NODES" ]; then
+    echo "No NUMBER_OF_NODES set. Required for cluster creation."
+    exit 1
+fi
+
+if [ -z "$CB_CORE_NAMESPACE" ]; then
+    echo "No CB_CORE_NAMESPACE set. Required for cluster creation."
+    exit 1
+fi
+
+if [ -z "$MANAGED_ZONE_NAME" ]; then
+    echo "No MANAGED_ZONE_NAME set. Required for cluster creation."
+    exit 1
+fi
+
+if [ -z "$SUBDOMAIN" ]; then
+    echo "No SUBDOMAIN set. Required for cluster creation."
+    exit 1
+fi
+
+if [ -z "$CB_CORE_CHART_VERSION" ]; then
+    echo "No CB_CORE_CHART_VERSION set. Required for cluster creation."
+    exit 1
+fi
+
+if [ -z "$HELM_RELEASE_NAME" ]; then
+    echo "No HELM_RELEASE_NAME set. Required for cluster creation."
+    exit 1
+fi
+
+
+if [ -z "$CLUSTER_VERSION" ]; then
+    echo "No CLUSTER_VERSION set, so using latest k8s version available."
+    CLUSTER_VERSION=`gcloud container get-server-config --region us-central1 --format=json | jq -r ".validMasterVersions[0]"`
+fi
+
+if [ -z "$BASE_DOMAIN" ]; then
+    echo "No BASE_DOMAIN set."
+    exit 1
+else
+    #ensure no trailing dot on the base domain
+    BASE_DOMAIN=$( echo "$BASE_DOMAIN" | sed 's/[.]$//' )
+    export DOMAIN_NAME=$SUBDOMAIN.$BASE_DOMAIN
+fi
+
+
+#----- create cluster
+#
+if [[ $(gcloud container clusters list --filter="name=$CLUSTER_NAME" --format=text 2>/dev/null ) ]]; then
+    echo "Cluster with this name already exists, skipping install."
+else
+    gcloud container clusters create "$CLUSTER_NAME" \
+        --project "$GCLOUD_PROJECT" \
+        --zone "$GCLOUD_ZONE" \
+        --labels="owner=$OWNER_LABEL" \
+        --cluster-version=$CLUSTER_VERSION \
+        --no-enable-basic-auth \
+        --machine-type "$MACHINE_TYPE" \
+        --disk-type "pd-ssd" \
+        --disk-size "$MACHINE_DISK_SIZE" \
+        --num-nodes "$NUMBER_OF_NODES" \
+        --enable-cloud-logging \
+        --enable-cloud-monitoring \
+        --no-enable-ip-alias \
+        --addons HorizontalPodAutoscaling,HttpLoadBalancing \
+        --enable-autoupgrade \
+        --enable-autorepair
+fi
+
+
+#---- ensure our kubectl auth is set up and its context is this cluster
+#
+gcloud container clusters get-credentials $CLUSTER_NAME
+
+
+#----- install helm
+#
+if [[ $( (helm version --server 2>&1 || true) | grep "Error: could not find tiller" ) ]]; then
+    echo "No helm detected. Installing helm"
+
+    kubectl create clusterrolebinding cluster-admin-binding \
+        --clusterrole cluster-admin \
+        --user $(gcloud config get-value account)
+
+    kubectl create serviceaccount --namespace kube-system tiller
+
+    kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+
+    helm init --service-account tiller
+else
+    echo "Helm detected, skipping installation."
+fi
+
+
+#----- manually install ingress-nginx
+#
+#TODO: replace this with the bundled ingress-nginx from cb-core helm chart
+#
+echo "Ensuring ingress yaml is applied"
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud-generic.yaml
+
+#----- update gcloud dns A record
+echo "Waiting for IP to be assigned... This can take a while."
+while [[ -z "$INGRESS_IP" ]]; do
+    echo "Waiting for IP to be assigned..."
+    export INGRESS_IP=$(kubectl get services --namespace ingress-nginx ingress-nginx --output jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null)
+    sleep 5
+done
+
+export BASE_DOMAIN
+export SUBDOMAIN
+export OWNER_LABEL
+export MANAGED_ZONE_NAME
+export INGRESS_IP
+
+./gcp-add-dns-host-record
+
+#----- create namespace for core install, label it, and update kubectl to use it by default for this connection
+#
+if [[ $(kubectl get namespaces --field-selector metadata.name=$CB_CORE_NAMESPACE --output=name) ]]; then
+    echo "Namespace '$CB_CORE_NAMESPACE' already exists. Skipping creation."
+else
+    kubectl create namespace $CB_CORE_NAMESPACE
+    kubectl label namespace $CB_CORE_NAMESPACE name=$CB_CORE_NAMESPACE
+fi
+
+kubectl config set-context $(kubectl config current-context) --namespace=$CB_CORE_NAMESPACE
+
+
+#----- for some reason the helm chart doesn't specify a default storage type that uses SSDs, so let's add one
+#
+kubectl apply -f ssd-storage.yaml
+kubectl patch storageclass standard -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+kubectl patch storageclass ssd -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+#----- use helm to install cloudbees-core helm chart
+#
+if [[ $(helm repo list | tr -s '\t' | cut -f 2 | grep "https://charts.cloudbees.com/public/cloudbees" 2>/dev/null ) ]]; then
+    echo "cloudbees public helm chart repo already exists in repo list"
+else
+    helm repo add cloudbees https://charts.cloudbees.com/public/cloudbees
+fi
+
+helm install --name $HELM_RELEASE_NAME \
+             --set OperationsCenter.HostName=$DOMAIN_NAME \
+             --namespace cloudbees-core \
+             --version $CB_CORE_CHART_VERSION \
+             cloudbees/cloudbees-core

@@ -1,0 +1,15 @@
+pipeline {
+    agent { label 'default-v2||default-v1||default-vx' }
+    stages {
+        stage('Test') {
+            steps {
+                println 'hello world'
+            }
+        }
+        stage('Sleep') {
+            steps {
+                sleep 60
+            }
+        }
+    }
+}
