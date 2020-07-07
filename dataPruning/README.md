@@ -21,22 +21,16 @@ Will take action on the jobs that violate the compliance rules. There is a boole
 * Flag/Delete empty folders.
 
 ## jobConfiguration
-The files within this folder contain xml code exported from the CloudBees Jenkins Operation Center. The purpose of these files is to easily create new jobs if they are deleted. Ideally these jobs should be added to the automation process at Capital One. Until that work is completed these files might be useful.
+The files within this folder contain xml code exported from the CloudBees Jenkins Operation Center. The purpose of these files is to easily create new jobs if they are deleted. Ideally these jobs should be added to the automation process at . Until that work is completed these files might be useful.
 
 ### To create a new job OC admins can run:
 
-`curl -s -XPOST 'https://jenkins.clouddqt.capitalone.com/job/AdminJobs/createItem?name=checkComplianceDetails' -u <userName>:<token> --data-binary @checkComplianceDetails.xml  -H "Content-Type:text/xml”`
 
-`curl -s -XPOST 'https://jenkins.clouddqt.capitalone.com/job/AdminJobs/createItem?name=correctViolations' -u <userName>:<token> --data-binary @correctViolations.xml  -H "Content-Type:text/xml"`
 
 ### To update the jobs after creation:
 
-`curl -s -XPOST 'https://jenkins.clouddqt.capitalone.com/job/AdminJobs/job/checkComplianceDetails/config.xml' -u <userName>:<token> --data-binary @checkComplianceDetails.xml  -H "Content-Type:text/xml”`
 
-`curl -s -XPOST 'https://jenkins.clouddqt.capitalone.com/job/AdminJobs/job/correctViolations/config.xml' -u <userName>:<token> --data-binary @correctViolations.xml  -H "Content-Type:text/xml”`
 
 ### To export jobs if changes are made on the IU
 
-`curl  -X GET 'https://jenkins.clouddqt.capitalone.com/job/AdminJobs/job/checkComplianceDetails/config.xml' -u <userName>:<token> -o checkComplianceDetails.xml `
 
-`curl  -X GET 'https://jenkins.clouddqt.capitalone.com/job/AdminJobs/job/correctViolations/config.xml' -u <userName>:<token> -o correctViolations.xml `
